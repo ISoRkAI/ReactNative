@@ -13,26 +13,11 @@ import {
   Alert,
 } from "react-native";
 
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-
-SplashScreen.preventAutoHideAsync();
-
-export default LoginScreen = () => {
+export default LoginScreen = ({ navigation }) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [keyboardStatus, setKeyboardStatus] = useState();
   const [secureText, setSecureText] = useState(true);
-
-  const [fontsLoaded] = useFonts({
-    "Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
-    "Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
-  });
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -55,10 +40,8 @@ export default LoginScreen = () => {
 
   const secureTextShown = () => {
     if (secureText === false) {
-      console.log("true", password);
       return setSecureText(true);
     }
-    console.log("false", password);
     return setSecureText(false);
   };
 
@@ -68,15 +51,12 @@ export default LoginScreen = () => {
   const loginUser = () => {
     Alert.alert("Credentials", `${login} + ${password}`);
   };
-  if (!fontsLoaded) {
-    return null;
-  }
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container} onLayout={onLayoutRootView}>
+      <View style={styles.container}>
         <ImageBackground
           style={styles.image}
-          source={require("../../assets/PhotoBG.png")}
+          source={require("../../../assets/PhotoBG.png")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : ""}
@@ -124,7 +104,10 @@ export default LoginScreen = () => {
               <TouchableOpacity style={styles.goBtn} onPress={loginUser}>
                 <Text style={styles.goText}>Войти</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.registrationBtn}>
+              <TouchableOpacity
+                style={styles.registrationBtn}
+                onPress={() => navigation.navigate("RegistrScreen")}
+              >
                 <Text style={styles.registrationBtnText}>
                   Нет аккаунта? Зарегистрироваться
                 </Text>

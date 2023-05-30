@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
   View,
@@ -13,41 +13,20 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 
-SplashScreen.preventAutoHideAsync();
-
-export default RegistrationScreen = () => {
+export default RegistrationScreen = ({ navigation }) => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keyboardStatus, setKeyboardStatus] = useState();
   const [secureText, setSecureText] = useState(true);
 
-  const [fontsLoaded] = useFonts({
-    "Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
-    "Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
-  });
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardStatus(true);
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardStatus(false);
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
+  const loginUser = () => {
+    Alert.alert("Credentials", `${login}  + ${email}+ ${password}`);
+    setPassword("");
+    setEmail("");
+    setLogin("");
+  };
 
   const keyboardHide = () => {
     setKeyboardStatus(false);
@@ -65,21 +44,25 @@ export default RegistrationScreen = () => {
   const inputEmail = (text) => setEmail(text);
   const inputLogin = (text) => setLogin(text);
 
-  const loginUser = () => {
-    Alert.alert("Credentials", `${login}  + ${email}+ ${password}`);
-    setPassword("");
-    setEmail("");
-    setLogin("");
-  };
-  if (!fontsLoaded) {
-    return null;
-  }
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus(false);
+    });
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container} onLayout={onLayoutRootView}>
+      <View style={styles.container}>
         <ImageBackground
           style={styles.image}
-          source={require("../../assets/PhotoBG.png")}
+          source={require("../../../assets/PhotoBG.png")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : ""}
@@ -95,7 +78,7 @@ export default RegistrationScreen = () => {
                   <TouchableOpacity style={styles.plussContainer}>
                     <Image
                       style={styles.add}
-                      source={require("../../assets/add.png")}
+                      source={require("../../../assets/add.png")}
                     />
                   </TouchableOpacity>
                 </View>
@@ -150,9 +133,12 @@ export default RegistrationScreen = () => {
               <TouchableOpacity style={styles.goBtn} onPress={loginUser}>
                 <Text style={styles.goText}>Войти</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.registrationBtn}>
+              <TouchableOpacity
+                style={styles.registrationBtn}
+                onPress={() => navigation.navigate("LogIn")}
+              >
                 <Text style={styles.registrationBtnText}>
-                  Нет аккаунта? Зарегистрироваться
+                  Уже есть аккаунт? Войти
                 </Text>
               </TouchableOpacity>
             </View>
