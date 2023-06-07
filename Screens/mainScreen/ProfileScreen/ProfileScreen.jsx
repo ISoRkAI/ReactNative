@@ -1,9 +1,17 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { authSignOutUser } from "../../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 
 export default ProfileScreen = () => {
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <View style={styles.container}>
-      <Text>ProfileScreen</Text>
+      <TouchableOpacity onPress={signOut}>
+        <Text>signOut</Text>
+      </TouchableOpacity>
     </View>
   );
 };

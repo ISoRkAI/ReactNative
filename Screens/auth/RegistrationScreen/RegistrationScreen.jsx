@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   ImageBackground,
   View,
@@ -13,19 +14,29 @@ import {
   Alert,
   Image,
 } from "react-native";
+import { authSignUpUser } from "../../../redux/auth/authOperations";
+
+const initialState = {
+  email: "",
+  password: "",
+  login: "",
+};
 
 export default RegistrationScreen = ({ navigation }) => {
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, setState] = useState(initialState);
   const [keyboardStatus, setKeyboardStatus] = useState();
   const [secureText, setSecureText] = useState(true);
 
-  const loginUser = () => {
-    Alert.alert("Credentials", `${login}  + ${email}+ ${password}`);
-    setPassword("");
-    setEmail("");
-    setLogin("");
+  const dispatch = useDispatch();
+
+  const SigInUser = () => {
+    if (state.login !== "" && state.email !== "" && state.password !== "") {
+      dispatch(authSignUpUser(state));
+      setState(initialState);
+    } else {
+      setIsShowKeyboard(false);
+      return alert("Fill in all the fields!!!");
+    }
   };
 
   const keyboardHide = () => {
@@ -39,10 +50,6 @@ export default RegistrationScreen = ({ navigation }) => {
     }
     return setSecureText(false);
   };
-
-  const inputPassword = (text) => setPassword(text);
-  const inputEmail = (text) => setEmail(text);
-  const inputLogin = (text) => setLogin(text);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -100,15 +107,19 @@ export default RegistrationScreen = ({ navigation }) => {
                 <TextInput
                   style={styles.inputEmail}
                   placeholder="Логин"
-                  onChangeText={inputLogin}
-                  value={login}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, login: value }))
+                  }
+                  value={state.login}
                   onFocus={() => setKeyboardStatus(true)}
                 ></TextInput>
                 <TextInput
                   style={styles.inputEmail}
                   placeholder="Адрес электронной почты"
-                  onChangeText={inputEmail}
-                  value={email}
+                  value={state.email}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, email: value }))
+                  }
                   onFocus={() => setKeyboardStatus(true)}
                 ></TextInput>
                 <View style={{ marginBottom: 42 }}>
@@ -116,8 +127,13 @@ export default RegistrationScreen = ({ navigation }) => {
                     style={styles.inputPassword}
                     placeholder="Пароль"
                     secureTextEntry={secureText}
-                    onChangeText={inputPassword}
-                    value={password}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
+                    value={state.password}
                     onFocus={() => setKeyboardStatus(true)}
                   ></TextInput>
                   <TouchableOpacity
@@ -130,7 +146,7 @@ export default RegistrationScreen = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity style={styles.goBtn} onPress={loginUser}>
+              <TouchableOpacity style={styles.goBtn} onPress={SigInUser}>
                 <Text style={styles.goText}>Войти</Text>
               </TouchableOpacity>
               <TouchableOpacity

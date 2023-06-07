@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   ImageBackground,
   View,
@@ -13,11 +14,19 @@ import {
   Alert,
 } from "react-native";
 
+import { authSignInUser } from "../../../redux/auth/authOperations";
+
+const initialState = {
+  email: "",
+  password: "",
+};
+
 export default LoginScreen = ({ navigation }) => {
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, setState] = useState(initialState);
   const [keyboardStatus, setKeyboardStatus] = useState();
   const [secureText, setSecureText] = useState(true);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -45,12 +54,11 @@ export default LoginScreen = ({ navigation }) => {
     return setSecureText(false);
   };
 
-  const inputPassword = (text) => setPassword(text);
-  const inputEmail = (text) => setLogin(text);
-
   const loginUser = () => {
-    Alert.alert("Credentials", `${login} + ${password}`);
+    dispatch(authSignInUser(state));
+    setState(initialState);
   };
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -78,8 +86,10 @@ export default LoginScreen = ({ navigation }) => {
                 <TextInput
                   style={styles.inputEmail}
                   placeholder="Адрес электронной почты"
-                  onChangeText={inputEmail}
-                  value={login}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, email: value }))
+                  }
+                  value={state.email}
                   onFocus={() => setKeyboardStatus(true)}
                 ></TextInput>
                 <View style={{ marginBottom: 42 }}>
@@ -87,8 +97,13 @@ export default LoginScreen = ({ navigation }) => {
                     style={styles.inputPassword}
                     placeholder="Пароль"
                     secureTextEntry={secureText}
-                    onChangeText={inputPassword}
-                    value={password}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
+                    value={state.password}
                     onFocus={() => setKeyboardStatus(true)}
                   ></TextInput>
                   <TouchableOpacity

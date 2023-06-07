@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList, Image } from "react-native";
-
 export default PostsScreen = ({ route }) => {
   const [posts, setPosts] = useState([]);
-
   useEffect(() => {
     if (route.params) {
       setPosts((prevState) => [...prevState, route.params]);
