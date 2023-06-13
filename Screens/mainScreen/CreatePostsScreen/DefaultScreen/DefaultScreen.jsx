@@ -11,19 +11,35 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
+import * as Location from "expo-location";
 
-export default DefaultScreen = ({ route }) => {
+export default DefaultScreen = ({ route, navigation }) => {
   const [_, setKeyboardStatus] = useState();
   const [photoName, setPhotoName] = useState("");
   const [camera, setCamera] = useState(null);
   const [goCamera, setGoCamera] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [location, setLocation] = useState(null);
+  console.log(location);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+    })();
+  }, []);
 
   const takePhoto = async () => {
     try {
       const photo = await camera.takePictureAsync();
       setPhoto(photo.uri);
+      const location = await Location.getCurrentPositionAsync({});
+      console.log("location", location);
+      setLocation(location);
     } catch (error) {
       console.log("Error taking photo: ", error.message);
     }
@@ -99,7 +115,10 @@ export default DefaultScreen = ({ route }) => {
           value={photoName}
           onFocus={() => setKeyboardStatus(true)}
         ></TextInput>
-        <TouchableOpacity style={styles.mapBtn}>
+        <TouchableOpacity
+          style={styles.mapBtn}
+          onPress={() => navigation.navigate("Карта")}
+        >
           <Feather
             name="map-pin"
             size={24}

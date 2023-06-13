@@ -40,6 +40,7 @@ export const MainScreen = () => {
       />
       <Tab.Screen
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
             <View
               style={{
