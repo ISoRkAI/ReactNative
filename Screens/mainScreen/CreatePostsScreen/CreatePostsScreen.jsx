@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import PhotoScreen from "./PhotoScreen/PhotoScreen";
 import MapScreen from "./MapScreen/MapScreen";
 import DefaultScreen from "./DefaultScreen/DefaultScreen";
+import { useState } from "react";
 
 const AuthStack = createStackNavigator();
 

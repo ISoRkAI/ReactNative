@@ -13,23 +13,29 @@ import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 
-export default DefaultScreen = ({ route, navigation }) => {
+export default DefaultScreen = ({ navigation }) => {
   const [_, setKeyboardStatus] = useState();
   const [photoName, setPhotoName] = useState("");
   const [camera, setCamera] = useState(null);
   const [goCamera, setGoCamera] = useState(false);
   const [photo, setPhoto] = useState(null);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [location, setLocation] = useState(null);
-  console.log(location);
+  const [region, setRegion] = useState(null);
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
+
+      const location = await Location.getCurrentPositionAsync();
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coords);
     })();
   }, []);
 
@@ -37,9 +43,12 @@ export default DefaultScreen = ({ route, navigation }) => {
     try {
       const photo = await camera.takePictureAsync();
       setPhoto(photo.uri);
-      const location = await Location.getCurrentPositionAsync({});
-      console.log("location", location);
-      setLocation(location);
+
+      const regionName = await Location.reverseGeocodeAsync({
+        longitude: location.longitude,
+        latitude: location.latitude,
+      });
+      setRegion(regionName);
     } catch (error) {
       console.log("Error taking photo: ", error.message);
     }
@@ -48,15 +57,17 @@ export default DefaultScreen = ({ route, navigation }) => {
   const runCamera = () => {
     setGoCamera(true);
   };
+
   const removePhoto = () => {
     setPhoto(null);
   };
+
   const keyboardHide = () => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
-  }; // const sendPhoto = () => {
-  //   navigation.navigate("Posts", { photo });
-  // };
+  };
+  console.log("region", region);
+  console.log("location", location);
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -117,7 +128,7 @@ export default DefaultScreen = ({ route, navigation }) => {
         ></TextInput>
         <TouchableOpacity
           style={styles.mapBtn}
-          onPress={() => navigation.navigate("Карта")}
+          onPress={() => navigation.navigate("Карта", { location })}
         >
           <Feather
             name="map-pin"
@@ -125,7 +136,11 @@ export default DefaultScreen = ({ route, navigation }) => {
             color="#BDBDBD"
             style={{ marginRight: 4 }}
           />
-          <Text style={styles.mapBtnText}>Местность...</Text>
+          <Text style={styles.mapBtnText}>
+            {!region
+              ? "Местность..."
+              : `${region[0].country}, ${region[0].city} `}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.send}>
           <Text style={styles.sendText}>Опубликовать</Text>
