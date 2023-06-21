@@ -34,7 +34,7 @@ export default PhotoScreen = ({ navigation }) => {
   }
 
   const sendPhoto = () => {
-    navigation.navigate("Posts", { photo });
+    navigation.navigate("Публикации", { photo });
   };
 
   return (

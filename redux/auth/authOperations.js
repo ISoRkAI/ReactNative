@@ -24,12 +24,12 @@ export const authSignUpUser = createAsyncThunk(
       };
       return userUpdateProfile;
     } catch (e) {
-      console.log(e.message);
+      console.log("signUp", e.message);
     }
   }
 );
 export const authSignInUser = createAsyncThunk(
-  "auth / signUp ",
+  "auth / signIn ",
   async ({ email, password }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -42,7 +42,7 @@ export const authSignInUser = createAsyncThunk(
       };
       return userUpdateProfile;
     } catch (e) {
-      console.log(e.message);
+      console.log("signIn", e.message);
     }
   }
 );
@@ -51,7 +51,7 @@ export const authSignOutUser = createAsyncThunk("auth/signOut", async () => {
   try {
     await signOut(auth);
   } catch (e) {
-    console.log(e.message);
+    console.log("signOut", e.message);
   }
 });
 

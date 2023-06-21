@@ -8,8 +8,15 @@ const Tab = createBottomTabNavigator();
 import PostsScreen from "./PostsScreen/PostsScreen.jsx";
 import CreatePostsScreen from "./CreatePostsScreen/CreatePostsScreen.jsx";
 import ProfileScreen from "./ProfileScreen/ProfileScreen.jsx";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../redux/auth/authOperations.js";
 
 export const MainScreen = () => {
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <Tab.Navigator
       screenOptions={{
@@ -21,7 +28,18 @@ export const MainScreen = () => {
     >
       <Tab.Screen
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={signOut}
+              title="exit"
+              style={{ marginRight: 16 }}
+            >
+              <View>
+                <Feather name="log-out" size={24} color="#BDBDBD" />
+              </View>
+            </TouchableOpacity>
+          ),
+          tabBarIcon: ({ focused, color }) => (
             <View
               style={{
                 marginLeft: 90,
@@ -35,13 +53,14 @@ export const MainScreen = () => {
             </View>
           ),
         }}
-        name="Posts"
+        name="Публикации"
         component={PostsScreen}
       />
       <Tab.Screen
         options={{
+          tabBarStyle: { display: "none" },
           headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
+          tabBarIcon: () => (
             <View
               style={{
                 flex: 1,
@@ -62,7 +81,7 @@ export const MainScreen = () => {
       />
       <Tab.Screen
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
+          tabBarIcon: ({ focused, color }) => (
             <View style={{ marginRight: 90 }}>
               <Feather
                 name="user"

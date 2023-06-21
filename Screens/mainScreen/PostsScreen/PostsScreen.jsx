@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, FlatList, Image } from "react-native";
+import { StyleSheet, View, FlatList, Image, Text } from "react-native";
 
 export default PostsScreen = ({ route }) => {
   const [posts, setPosts] = useState([]);
+
   useEffect(() => {
     if (route.params) {
       setPosts((prevState) => [...prevState, route.params]);
@@ -16,10 +17,8 @@ export default PostsScreen = ({ route }) => {
         keyExtractor={(item, indx) => indx.toString()}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 10 }}>
-            <Image
-              source={{ uri: item.photo }}
-              style={{ marginHorizontal: 10, height: 200 }}
-            />
+            <Image source={{ uri: item.photo }} style={styles.postPhoto} />
+            <Text>{item.photoName}</Text>
           </View>
         )}
       />
@@ -30,5 +29,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    paddingHorizontal: 16,
   },
+  postPhoto: { height: 240, borderRadius: 8, marginBottom: 8 },
 });

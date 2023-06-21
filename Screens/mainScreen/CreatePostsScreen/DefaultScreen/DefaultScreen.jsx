@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,44 +11,26 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
-import * as Location from "expo-location";
 
-export default DefaultScreen = ({ navigation }) => {
+export default DefaultScreen = ({ navigation, route }) => {
   const [_, setKeyboardStatus] = useState();
   const [photoName, setPhotoName] = useState("");
   const [camera, setCamera] = useState(null);
   const [goCamera, setGoCamera] = useState(false);
   const [photo, setPhoto] = useState(null);
-  const [location, setLocation] = useState(null);
   const [region, setRegion] = useState(null);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync();
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setLocation(coords);
-    })();
-  }, []);
+    if (!route.params) {
+      return;
+    }
+    setRegion(route.params.region[0]);
+  }, [route]);
 
   const takePhoto = async () => {
     try {
       const photo = await camera.takePictureAsync();
       setPhoto(photo.uri);
-
-      const regionName = await Location.reverseGeocodeAsync({
-        longitude: location.longitude,
-        latitude: location.latitude,
-      });
-      setRegion(regionName);
     } catch (error) {
       console.log("Error taking photo: ", error.message);
     }
@@ -66,8 +48,7 @@ export default DefaultScreen = ({ navigation }) => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
-  console.log("region", region);
-  console.log("location", location);
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -117,18 +98,13 @@ export default DefaultScreen = ({ navigation }) => {
         <TextInput
           style={styles.inputName}
           placeholder="Название..."
-          onChangeText={(value) =>
-            setPhotoName((prevState) => ({
-              ...prevState,
-              value,
-            }))
-          }
+          onChangeText={(value) => setPhotoName(value)}
           value={photoName}
           onFocus={() => setKeyboardStatus(true)}
         ></TextInput>
         <TouchableOpacity
           style={styles.mapBtn}
-          onPress={() => navigation.navigate("Карта", { location })}
+          onPress={() => navigation.navigate("Карта")}
         >
           <Feather
             name="map-pin"
@@ -136,14 +112,51 @@ export default DefaultScreen = ({ navigation }) => {
             color="#BDBDBD"
             style={{ marginRight: 4 }}
           />
-          <Text style={styles.mapBtnText}>
-            {!region
-              ? "Местность..."
-              : `${region[0].country}, ${region[0].city} `}
+          {region ? (
+            <Text style={styles.mapBtnTextActive}>
+              {region.country}, {region.city}, {region.name}
+            </Text>
+          ) : (
+            <Text style={styles.mapBtnText}>Местность...</Text>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={photoName.length !== 0 && photo ? false : true}
+          style={
+            photoName.length !== 0 && photo
+              ? styles.send
+              : { ...styles.send, backgroundColor: "#F6F6F6" }
+          }
+          onPress={() => {
+            navigation.navigate("Публикации", { region, photo, photoName });
+            setCamera(null),
+              setPhoto(null),
+              setGoCamera(null),
+              setPhotoName(""),
+              setRegion(null);
+          }}
+        >
+          <Text
+            style={
+              photoName.length !== 0 && photo
+                ? styles.sendText
+                : {
+                    ...styles.sendText,
+                    color: "#BDBDBD",
+                  }
+            }
+          >
+            Опубликовать
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.send}>
-          <Text style={styles.sendText}>Опубликовать</Text>
+        <TouchableOpacity
+          style={styles.delete}
+          onPress={() => {
+            setCamera(null), setPhoto(null), setGoCamera(null);
+            setPhotoName(""), setRegion(null);
+          }}
+        >
+          <Feather name="trash-2" size={24} color="#DADADA" />
         </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
@@ -210,6 +223,10 @@ const styles = StyleSheet.create({
     borderColor: "#E8E8E8",
     marginBottom: 32,
     placeholder: { color: "red" },
+    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#212121",
   },
   mapBtn: {
     flexDirection: "row",
@@ -221,9 +238,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   mapBtnText: { color: "#BDBDBD" },
+  mapBtnTextActive: {
+    color: "#212121",
+    fontSize: 16,
+    lineHeight: 19,
+  },
   sendText: {
     fontSize: 16,
     lineHeight: 19,
     color: "#FFFFFF",
+  },
+  delete: {
+    width: 70,
+    height: 40,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "45%",
   },
 });

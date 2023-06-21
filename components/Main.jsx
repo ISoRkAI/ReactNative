@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { AuthScreen } from "../Screens/auth/authScreen";
@@ -12,10 +12,11 @@ const Main = () => {
   useEffect(() => {
     dispatch(authStateChahngeUser());
   }, []);
-
+  const isLoggedIn = useSelector(selectorUser);
+  console.log("isLoggedIn", isLoggedIn);
   return (
     <NavigationContainer>
-      {selectorUser ? <MainScreen /> : <AuthScreen />}
+      {isLoggedIn ? <MainScreen /> : <AuthScreen />}
     </NavigationContainer>
   );
 };
