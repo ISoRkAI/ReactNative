@@ -11,6 +11,9 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
+import { storage } from "../../../../firebase/config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { nanoid } from "@reduxjs/toolkit";
 
 export default DefaultScreen = ({ navigation, route }) => {
   const [_, setKeyboardStatus] = useState();
@@ -48,7 +51,37 @@ export default DefaultScreen = ({ navigation, route }) => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
+  const uploadPhotoToServer = async () => {
+    try {
+      const id = nanoid();
+      const storageRef = ref(storage, `photos/${id}`);
+      const response = await fetch(photo);
+      const blob = await response.blob();
+      await uploadBytes(storageRef, blob);
+      const processedPhoto = await getDownloadURL(storageRef);
+      console.log("processedPhoto", processedPhoto);
+    } catch (error) {
+      console.log("error", error);
+    }
 
+    //
+    //
+    // const uniquePostId = Data.now().toString();
+    // const storageRef = await ref(storage, `postImage/${uniquePostId}`);
+    // uploadBytes(storageRef, file).then((snapshot) => {
+    //   console.log("Uploaded a blob or file!");
+    // });
+  };
+
+  const sendPhoto = () => {
+    navigation.navigate("Публикации", { region, photo, photoName });
+    uploadPhotoToServer();
+    setCamera(null),
+      setPhoto(null),
+      setGoCamera(null),
+      setPhotoName(""),
+      setRegion(null);
+  };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -128,12 +161,7 @@ export default DefaultScreen = ({ navigation, route }) => {
               : { ...styles.send, backgroundColor: "#F6F6F6" }
           }
           onPress={() => {
-            navigation.navigate("Публикации", { region, photo, photoName });
-            setCamera(null),
-              setPhoto(null),
-              setGoCamera(null),
-              setPhotoName(""),
-              setRegion(null);
+            sendPhoto();
           }}
         >
           <Text
