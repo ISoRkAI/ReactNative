@@ -11,9 +11,11 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
-import { storage } from "../../../../firebase/config";
+import { db, storage } from "../../../../firebase/config";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { nanoid } from "@reduxjs/toolkit";
+import { addDoc, collection } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 export default DefaultScreen = ({ navigation, route }) => {
   const [_, setKeyboardStatus] = useState();
@@ -22,6 +24,8 @@ export default DefaultScreen = ({ navigation, route }) => {
   const [goCamera, setGoCamera] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [region, setRegion] = useState(null);
+
+  const { userId, login } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (!route.params) {
@@ -51,6 +55,7 @@ export default DefaultScreen = ({ navigation, route }) => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
+
   const uploadPhotoToServer = async () => {
     try {
       const id = nanoid();
@@ -59,23 +64,39 @@ export default DefaultScreen = ({ navigation, route }) => {
       const blob = await response.blob();
       await uploadBytes(storageRef, blob);
       const processedPhoto = await getDownloadURL(storageRef);
-      console.log("processedPhoto", processedPhoto);
+      return processedPhoto;
     } catch (error) {
       console.log("error", error);
     }
-
-    //
-    //
-    // const uniquePostId = Data.now().toString();
-    // const storageRef = await ref(storage, `postImage/${uniquePostId}`);
-    // uploadBytes(storageRef, file).then((snapshot) => {
-    //   console.log("Uploaded a blob or file!");
-    // });
   };
 
+  const uploadPostToServer = async () => {
+    try {
+      const photo = await uploadPhotoToServer();
+      console.log("photo", photo);
+      const createPost = await addDoc(collection(db, "posts"), {
+        photo,
+        photoName,
+        region,
+        userId,
+        login,
+      });
+      console.log(
+        "photo,photoName,region,userId,login",
+        photo,
+        photoName,
+        region,
+        userId,
+        login
+      );
+      console.log("createPost", createPost);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
   const sendPhoto = () => {
     navigation.navigate("Публикации", { region, photo, photoName });
-    uploadPhotoToServer();
+    uploadPostToServer();
     setCamera(null),
       setPhoto(null),
       setGoCamera(null),

@@ -9,12 +9,13 @@ import {
 
 export const authSignUpUser = createAsyncThunk(
   "auth / signUp ",
-  async ({ login, email, password }) => {
+  async ({ login, email, password }, ThunkAPI) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(auth.currentUser, {
         displayName: login,
       });
+
       const user = await auth.currentUser;
       const userUpdateProfile = {
         userId: user.uid,
@@ -22,17 +23,20 @@ export const authSignUpUser = createAsyncThunk(
         email: user.email,
         stateChange: true,
       };
+
       return userUpdateProfile;
     } catch (e) {
-      console.log("signUp", e.message);
+      return ThunkAPI.rejectWithValue(e.message);
     }
   }
 );
+
 export const authSignInUser = createAsyncThunk(
   "auth / signIn ",
-  async ({ email, password }) => {
+  async ({ email, password }, ThunkAPI) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+
       const user = await auth.currentUser;
       const userUpdateProfile = {
         userId: user.uid,
@@ -40,24 +44,28 @@ export const authSignInUser = createAsyncThunk(
         email: user.email,
         stateChange: true,
       };
+
       return userUpdateProfile;
     } catch (e) {
-      console.log("signIn", e.message);
+      return ThunkAPI.rejectWithValue(e.message);
     }
   }
 );
 
-export const authSignOutUser = createAsyncThunk("auth/signOut", async () => {
-  try {
-    await signOut(auth);
-  } catch (e) {
-    console.log("signOut", e.message);
+export const authSignOutUser = createAsyncThunk(
+  "auth/signOut",
+  async (ThunkAPI) => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      return ThunkAPI.rejectWithValue(e.message);
+    }
   }
-});
+);
 
-export const authStateChahngeUser = createAsyncThunk(
+export const authStateChangeUser = createAsyncThunk(
   "auth/refreshUser",
-  async () => {
+  async (ThunkAPI) => {
     try {
       const user = await new Promise((resolve, reject) => {
         onAuthStateChanged(auth, (user) => {
@@ -68,24 +76,26 @@ export const authStateChahngeUser = createAsyncThunk(
           }
         });
       });
+
       if (user) {
         const userUpdateProfile = {
           userId: user.uid,
           login: user.displayName,
           email: user.email,
-          stateChange: true,
         };
+
+        return userUpdateProfile;
+      } else {
+        const userUpdateProfile = {
+          userId: null,
+          login: null,
+          email: null,
+        };
+
         return userUpdateProfile;
       }
-      const userUpdateProfile = {
-        userId: null,
-        login: null,
-        email: null,
-        stateChange: false,
-      };
-      return userUpdateProfile;
     } catch (e) {
-      console.log(e.message);
+      return ThunkAPI.rejectWithValue(e.message);
     }
   }
 );

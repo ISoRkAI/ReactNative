@@ -4,16 +4,15 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import { AuthScreen } from "../Screens/auth/authScreen";
 import { MainScreen } from "../Screens/mainScreen/MeinScreen";
-import { authStateChahngeUser } from "../redux/auth/authOperations";
+import { authStateChangeUser } from "../redux/auth/authOperations";
 import { selectorUser } from "../redux/selectors";
 
 const Main = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(authStateChahngeUser());
+    dispatch(authStateChangeUser());
   }, []);
   const isLoggedIn = useSelector(selectorUser);
-  console.log("isLoggedIn", isLoggedIn);
   return (
     <NavigationContainer>
       {isLoggedIn ? <MainScreen /> : <AuthScreen />}

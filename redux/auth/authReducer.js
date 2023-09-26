@@ -3,57 +3,75 @@ import {
   authSignInUser,
   authSignOutUser,
   authSignUpUser,
-  authStateChahngeUser,
+  authStateChangeUser,
 } from "./authOperations";
 
 const initialState = {
-  user: { login: null, email: null, userId: null, stateChange: false },
+  user: { login: null, email: null, userId: null },
+  isLoggedIn: false,
+  isLoading: false,
+  error: "",
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  extraReducers: {
-    [authSignUpUser.fulfilled](state, { payload }) {
-      state.user = payload;
-    },
-    [authSignUpUser.rejected](state, _) {
-      state.user = {
-        login: null,
-        email: null,
-        userId: null,
-        stateChange: false,
-      };
-    },
-    [authSignInUser.fulfilled](state, { payload }) {
-      state.user = payload;
-    },
-    [authSignInUser.rejected](state, _) {
-      state.user = {
-        login: null,
-        email: null,
-        userId: null,
-        stateChange: false,
-      };
-    },
-    [authStateChahngeUser.fulfilled](state, { payload }) {
-      state.user = payload;
-    },
-    [authStateChahngeUser.rejected](state, _) {
-      state.user = {
-        login: null,
-        email: null,
-        userId: null,
-        stateChange: false,
-      };
-    },
-    [authSignOutUser.fulfilled](state, _) {
-      state.user = {
-        login: null,
-        email: null,
-        userId: null,
-        stateChange: false,
-      };
-    },
-  },
+  extraReducers: (builder) =>
+    builder
+      .addCase(authSignUpUser.pending, (state, _) => {
+        state.isLoggedIn = false;
+        state.isLoading = true;
+      })
+      .addCase(authSignUpUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isLoggedIn = true;
+        state.isLoading = false;
+      })
+      .addCase(authSignUpUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoggedIn = false;
+        state.isLoading = false;
+      })
+      .addCase(authSignInUser.pending, (state, _) => {
+        state.isLoggedIn = false;
+        state.isLoading = true;
+      })
+      .addCase(authSignInUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isLoggedIn = true;
+        state.isLoading = false;
+      })
+      .addCase(authSignInUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoggedIn = false;
+        state.isLoading = false;
+      })
+      .addCase(authStateChangeUser.pending, (state, _) => {
+        state.isLoggedIn = false;
+        state.isLoading = true;
+      })
+      .addCase(authStateChangeUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isLoggedIn = true;
+        state.isLoading = false;
+      })
+      .addCase(authStateChangeUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoggedIn = false;
+        state.isLoading = false;
+      })
+      .addCase(authSignOutUser.pending, (state, _) => {
+        state.isLoggedIn = false;
+        state.isLoading = true;
+      })
+      .addCase(authSignOutUser.fulfilled, (state, _) => {
+        state.user = initialState;
+        state.isLoggedIn = true;
+        state.isLoading = false;
+      })
+      .addCase(authSignOutUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoggedIn = false;
+        state.isLoading = false;
+      }),
 });

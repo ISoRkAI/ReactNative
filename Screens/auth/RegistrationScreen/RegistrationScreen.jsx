@@ -11,7 +11,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Image,
 } from "react-native";
 import { authSignUpUser } from "../../../redux/auth/authOperations";
@@ -24,7 +23,7 @@ const initialState = {
 
 export default RegistrationScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
-  const [keyboardStatus, setKeyboardStatus] = useState();
+  const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [secureText, setSecureText] = useState(true);
 
   const dispatch = useDispatch();
@@ -34,7 +33,7 @@ export default RegistrationScreen = ({ navigation }) => {
       dispatch(authSignUpUser(state));
       setState(initialState);
     } else {
-      setIsShowKeyboard(false);
+      setShowKeyboard(false);
       return alert("Fill in all the fields!!!");
     }
   };
