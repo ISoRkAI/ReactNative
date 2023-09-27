@@ -5,7 +5,7 @@ import { Feather } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
-import PostsScreen from "./PostsScreen/PostsScreen.jsx";
+import PostsScreen from "./PostsScreen/PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen/CreatePostsScreen.jsx";
 import ProfileScreen from "./ProfileScreen/ProfileScreen.jsx";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -17,6 +17,7 @@ export const MainScreen = () => {
   const signOut = () => {
     dispatch(authSignOutUser());
   };
+  console.log(1);
   return (
     <Tab.Navigator
       screenOptions={{

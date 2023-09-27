@@ -1,15 +1,13 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { Feather } from "@expo/vector-icons";
-import PhotoScreen from "./PhotoScreen/PhotoScreen";
 import MapScreen from "./MapScreen/MapScreen";
 import DefaultScreen from "./DefaultScreen/DefaultScreen";
-import { useEffect, useState } from "react";
-import { getHeaderTitle } from "@react-navigation/elements";
 import { TouchableOpacity, View } from "react-native";
 
 const AuthStack = createStackNavigator();
 
 export default CreatePostsScreen = ({ navigation }) => {
+  console.log(2);
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen

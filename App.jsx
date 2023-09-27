@@ -5,8 +5,8 @@ import { View } from "react-native";
 
 import * as SplashScreen from "expo-splash-screen";
 
-import { store } from "./redux/store";
-import Main from "./components/Main";
+import { store } from "./src/redux/store";
+import Main from "./src/components/Main";
 
 SplashScreen.preventAutoHideAsync();
 

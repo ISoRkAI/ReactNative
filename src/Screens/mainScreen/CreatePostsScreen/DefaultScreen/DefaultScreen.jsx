@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
-import { db, storage } from "../../../../firebase/config";
+import { db, storage } from "../../../../../firebase/config";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { nanoid } from "@reduxjs/toolkit";
 import { addDoc, collection } from "firebase/firestore";

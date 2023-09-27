@@ -36,7 +36,8 @@
     "react-native-svg-transformer": "^1.0.0",
     "react-native-vector-icons": "^9.2.0",
     "react-redux": "^8.0.5",
-    "react-svg-sprite": "^1.0.8"
+    "react-svg-sprite": "^1.0.8",
+    "styled-components": "^6.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
