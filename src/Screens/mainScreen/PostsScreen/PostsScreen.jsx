@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList, Image, Text } from "react-native";
 
-export default PostsScreen = ({ route }) => {
+export const PostsScreen = ({ route }) => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
