@@ -7,7 +7,7 @@ import { DefaultScreen } from "./DefaultScreen/DefaultScreen";
 
 const AuthStack = createStackNavigator();
 
-export const CreatePostsScreen = ({ navigation }) => {
+export const CreatePostsScreen = ({ navigation, route }) => {
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen

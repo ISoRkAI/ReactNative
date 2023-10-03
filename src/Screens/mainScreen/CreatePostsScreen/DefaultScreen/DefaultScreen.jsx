@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 
 import { db, storage } from "../../../../../firebase/config";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { addDoc, collection } from "firebase/firestore";
+import { QuerySnapshot, addDoc, collection, getDocs } from "firebase/firestore";
 import {
   ClearBtn,
   Container,
@@ -37,14 +37,15 @@ export const DefaultScreen = ({ navigation, route }) => {
   const [goCamera, setGoCamera] = useState(true);
   const [photo, setPhoto] = useState(null);
   const [region, setRegion] = useState(null);
-
+  const [posts, setPosts] = useState([]);
   const { userId, login } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (!route.params) {
       return;
     }
-    setRegion(route.params.region[0]);
+
+    setRegion({ ...route.params.region[0], ...route.params.coordinates });
   }, [route]);
 
   const keyboardHide = () => {
@@ -83,7 +84,7 @@ export const DefaultScreen = ({ navigation, route }) => {
   };
 
   const sendPhoto = () => {
-    navigation.navigate("Публикации", { region, photo, photoName });
+    navigation.navigate("Публикации");
     uploadPostToServer();
     setPhoto(null);
     setPhotoName("");
@@ -97,6 +98,7 @@ export const DefaultScreen = ({ navigation, route }) => {
     setPhotoName("");
     setRegion(null);
   };
+  console.log(region);
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <Container>

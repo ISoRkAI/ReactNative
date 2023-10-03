@@ -11,7 +11,10 @@ import { ProfileScreen } from "./ProfileScreen/ProfileScreen.jsx";
 import { authSignOutUser } from "../../redux/auth/authOperations.js";
 import { BtnExit, BtnGrid, BtnPlus, BtnUser } from "./MeinScreen.styled";
 
-export const MainScreen = () => {
+export const MainScreen = ({ route }) => {
+  const mapOpen = route.params?.MapOpen;
+
+  console.log("MainScreen route.params");
   const dispatch = useDispatch();
 
   const signOut = () => {
@@ -21,6 +24,7 @@ export const MainScreen = () => {
   return (
     <Tab.Navigator
       screenOptions={{
+        headerShown: !mapOpen,
         tabBarShowLabel: false,
         tabBarStyle: {
           height: Platform.OS === "ios" ? 100 : 70,
@@ -29,6 +33,7 @@ export const MainScreen = () => {
     >
       <Tab.Screen
         options={{
+          tabBarStyle: { display: mapOpen ? "none" : "" },
           headerRight: () => (
             <BtnExit onPress={() => signOut()} title="exit">
               <Feather name="log-out" size={24} color="#BDBDBD" />

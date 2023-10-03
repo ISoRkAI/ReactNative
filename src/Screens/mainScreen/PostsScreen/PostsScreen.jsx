@@ -1,35 +1,36 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, View, FlatList, Image, Text } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { Feather } from "@expo/vector-icons";
+import { DefaultPostsScreen } from "./DefaultPostScreen/DefaultPostScreen";
+import MapPostScreen from "./MapScreen/MapPostScreen";
+import { CommentScreen } from "./CommentScreen/CommentScreen";
 
-export const PostsScreen = ({ route }) => {
-  const [posts, setPosts] = useState([]);
+// import MapScreen from "./MapScreen/MapScreen";
 
-  useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+const AuthStack = createStackNavigator();
 
+export const PostsScreen = () => {
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={posts}
-        keyExtractor={(item, indx) => indx.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 10 }}>
-            <Image source={{ uri: item.photo }} style={styles.postPhoto} />
-            <Text>{item.photoName}</Text>
-          </View>
-        )}
-      />
-    </View>
+    <AuthStack.Navigator>
+      <AuthStack.Screen
+        options={{
+          headerShown: false,
+          headerBackVisible: true,
+          headerBackTitleVisible: true,
+        }}
+        name="Публикации"
+        component={DefaultPostsScreen}
+      ></AuthStack.Screen>
+      <AuthStack.Screen
+        options={{ headerBackTitle: "Назад" }}
+        name="Карта"
+        component={MapPostScreen}
+      ></AuthStack.Screen>
+      <AuthStack.Screen
+        options={{ headerBackTitle: "Назад" }}
+        name="Комментарии"
+        component={CommentScreen}
+      ></AuthStack.Screen>
+    </AuthStack.Navigator>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 16,
-  },
-  postPhoto: { height: 240, borderRadius: 8, marginBottom: 8 },
-});

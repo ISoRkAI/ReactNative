@@ -6,12 +6,12 @@ import * as Location from "expo-location";
 
 export default MapScreen = ({ navigation, route }) => {
   const [coordinates, setCoordinates] = useState(null);
-  const [region, setRegion] = useState(null);
-  if (route.params.location) {
-    const { latitude, longitude } = route.params.location;
-    console.log("latitude", latitude);
-    console.log("longitude", longitude);
-  }
+
+  useEffect(() => {
+    navigation.addListener("transitionStart", () => {
+      navigation.navigate("MainScreen", { MapOpen: false });
+    });
+  }, [navigation]);
 
   useEffect(() => {
     (async () => {
@@ -21,22 +21,13 @@ export default MapScreen = ({ navigation, route }) => {
           setErrorMsg("Permission to access location was denied");
           return;
         }
-
-        const location = await Location.getCurrentPositionAsync();
-
-        const { latitude, longitude } = location.coords;
+        const { latitude, longitude } = route.params.location;
 
         const coords = {
           latitude: latitude,
           longitude: longitude,
         };
         setCoordinates(coords);
-
-        const regionName = await Location.reverseGeocodeAsync({
-          longitude: longitude,
-          latitude: latitude,
-        });
-        setRegion(regionName);
       } catch (error) {
         console.log("Error: ", error.message);
       }
@@ -50,10 +41,6 @@ export default MapScreen = ({ navigation, route }) => {
       </View>
     );
   }
-
-  navigation.addListener("transitionStart", () => {
-    navigation.navigate("Создать публикацию", { region, coordinates });
-  });
 
   return (
     <View style={styles.container}>
