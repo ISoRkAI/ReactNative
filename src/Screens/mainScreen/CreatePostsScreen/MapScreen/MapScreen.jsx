@@ -7,11 +7,6 @@ import * as Location from "expo-location";
 export default MapScreen = ({ navigation, route }) => {
   const [coordinates, setCoordinates] = useState(null);
   const [region, setRegion] = useState(null);
-  if (route.params.location) {
-    const { latitude, longitude } = route.params.location;
-    console.log("latitude", latitude);
-    console.log("longitude", longitude);
-  }
 
   useEffect(() => {
     (async () => {

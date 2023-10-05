@@ -9,7 +9,7 @@ export default MapScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     navigation.addListener("transitionStart", () => {
-      navigation.navigate("MainScreen", { MapOpen: false });
+      navigation.navigate("MainScreen", { screenOpen: false });
     });
   }, [navigation]);
 

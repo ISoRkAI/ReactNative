@@ -14,6 +14,7 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
       setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
   };
+
   useEffect(() => {
     getAllPost();
   }, []);
@@ -45,8 +46,8 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 style={{ flexDirection: "row", alignItems: "center" }}
                 onPress={() => {
-                  navigation.navigate("MainScreen", { MapOpen: true });
-                  navigation.navigate("Комментарии");
+                  navigation.navigate("MainScreen", { screenOpen: true });
+                  navigation.navigate("Комментарии", { postId: item.id });
                 }}
               >
                 <Feather
@@ -67,7 +68,7 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 style={{ flexDirection: "row", alignItems: "center" }}
                 onPress={() => {
-                  navigation.navigate("MainScreen", { MapOpen: true });
+                  navigation.navigate("MainScreen", { screenOpen: true });
                   navigation.navigate("Карта", { location: item.region });
                 }}
               >

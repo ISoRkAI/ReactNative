@@ -1,7 +1,26 @@
 import { Feather } from "@expo/vector-icons";
+import { useEffect } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useSelector } from "react-redux";
+import { selectorAuth } from "../../../../redux/selectors";
+import { db } from "../../../../../firebase/config";
+import { collection, doc, query, setDoc } from "firebase/firestore";
+import { useState } from "react";
 
-export const CommentScreen = () => {
+export const CommentScreen = ({ route, navigation }) => {
+  const [state, setState] = useState("");
+  const { postId } = route.params;
+  const logIn = useSelector(selectorAuth);
+
+  useEffect(() => {
+    navigation.addListener("transitionStart", () => {
+      navigation.navigate("MainScreen", { screenOpen: false });
+    });
+  }, [navigation]);
+
+  const createPost = async () => {
+    await setDoc(doc(db, "posts", `${postId}`, "comments"), state);
+  };
   return (
     <View
       style={{
@@ -23,6 +42,9 @@ export const CommentScreen = () => {
       >
         <TextInput
           placeholder="Комментировать..."
+          onChangeText={(value) =>
+            setState((prevState) => ({ ...prevState, value }))
+          }
           style={{
             width: "100%",
             height: 50,
@@ -45,6 +67,7 @@ export const CommentScreen = () => {
             justifyContent: "center",
             alignItems: "center",
           }}
+          onPress={createPost}
         >
           <Feather name="arrow-up" size={24} color="#ffffff" />
         </TouchableOpacity>
