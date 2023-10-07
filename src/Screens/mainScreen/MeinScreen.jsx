@@ -13,8 +13,6 @@ import { BtnExit, BtnGrid, BtnPlus, BtnUser } from "./MeinScreen.styled";
 
 export const MainScreen = ({ route }) => {
   const screenOpen = route.params?.screenOpen;
-
-  console.log("MainScreen route.params", screenOpen);
   const dispatch = useDispatch();
 
   const signOut = () => {

@@ -1,2 +1,2 @@
-export const selectorUser = (state) => state.auth.isLoggedIn;
-export const selectorAuth = (state) => state.auth.user.logIn;
+export const isLogIn = (state) => state.auth.isLoggedIn;
+export const selectorLogin = (state) => state.auth.user.login;

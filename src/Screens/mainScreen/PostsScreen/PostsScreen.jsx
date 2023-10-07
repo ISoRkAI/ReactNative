@@ -5,8 +5,6 @@ import { DefaultPostsScreen } from "./DefaultPostScreen/DefaultPostScreen";
 import MapPostScreen from "./MapScreen/MapPostScreen";
 import { CommentScreen } from "./CommentScreen/CommentScreen";
 
-// import MapScreen from "./MapScreen/MapScreen";
-
 const AuthStack = createStackNavigator();
 
 export const PostsScreen = () => {
@@ -18,7 +16,7 @@ export const PostsScreen = () => {
           headerBackVisible: true,
           headerBackTitleVisible: true,
         }}
-        name="Публикации"
+        name="Publications"
         component={DefaultPostsScreen}
       ></AuthStack.Screen>
       <AuthStack.Screen

@@ -37,7 +37,6 @@ export const DefaultScreen = ({ navigation, route }) => {
   const [goCamera, setGoCamera] = useState(true);
   const [photo, setPhoto] = useState(null);
   const [region, setRegion] = useState(null);
-  const [posts, setPosts] = useState([]);
   const { userId, login } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -98,7 +97,7 @@ export const DefaultScreen = ({ navigation, route }) => {
     setPhotoName("");
     setRegion(null);
   };
-  console.log(region);
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <Container>

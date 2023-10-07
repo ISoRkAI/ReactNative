@@ -1,16 +1,55 @@
 import { Feather } from "@expo/vector-icons";
 import { useEffect } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSelector } from "react-redux";
-import { selectorAuth } from "../../../../redux/selectors";
+import { selectorLogin } from "../../../../redux/selectors";
 import { db } from "../../../../../firebase/config";
-import { collection, doc, query, setDoc } from "firebase/firestore";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { useState } from "react";
+import { FlatList } from "react-native";
+
+const optionsMonth = [
+  "Січня",
+  "Лютого",
+  "Березня",
+  "Квітня",
+  "Травня",
+  "Червня",
+  "Липня",
+  "Серпня",
+  "Вересня",
+  "Жовтня",
+  "Листопада",
+  "Грудня",
+];
 
 export const CommentScreen = ({ route, navigation }) => {
-  const [state, setState] = useState("");
-  const { postId } = route.params;
-  const logIn = useSelector(selectorAuth);
+  const [comment, setComment] = useState("");
+  const [allComments, setAllComments] = useState([]);
+  const { postId, uri } = route.params;
+  const login = useSelector(selectorLogin);
+  const screenHeight = Dimensions.get("window").width;
+  const widthCommentBlock = screenHeight - 76;
+
+  useEffect(() => {
+    getAllComment();
+  }, []);
 
   useEffect(() => {
     navigation.addListener("transitionStart", () => {
@@ -18,9 +57,35 @@ export const CommentScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  const createPost = async () => {
-    await setDoc(doc(db, "posts", `${postId}`, "comments"), state);
+  const addLeadingZero = (e) => {
+    return e < 10 ? "0" + e : e;
   };
+
+  const getCommentTime = () => {
+    const time = new Date();
+    const D = addLeadingZero(time.getDate());
+    const M = optionsMonth[time.getDate()];
+    const Y = time.getFullYear();
+    const h = time.getHours();
+    const m = time.getMinutes();
+    return `${D} ${M} ${Y} | ${h}:${m}`;
+  };
+
+  const createComment = async () => {
+    await addDoc(collection(db, "posts", postId, "comment"), {
+      comment,
+      nickName: login,
+      time: getCommentTime().toString(),
+    });
+  };
+
+  const getAllComment = async () => {
+    const queryComments = query(collection(db, "posts", postId, "comment"));
+    onSnapshot(queryComments, (data) => {
+      setAllComments(data.docs.map((doc) => doc.data()));
+    });
+  };
+
   return (
     <View
       style={{
@@ -30,7 +95,82 @@ export const CommentScreen = ({ route, navigation }) => {
         backgroundColor: "#ffffff",
       }}
     >
-      <Text>CommentScreen</Text>
+      <Image
+        source={{ uri }}
+        style={{
+          width: "100%",
+          height: 240,
+          borderRadius: 8,
+          marginBottom: 32,
+        }}
+      />
+      <FlatList
+        data={allComments}
+        keyExtractor={(_, indx) => indx.toString()}
+        style={{
+          marginBottom: 82,
+        }}
+        renderItem={({ item }) => {
+          const { nickName, comment, time } = item;
+          return (
+            <View
+              style={{
+                flexDirection: nickName === login ? "row-reverse" : "row",
+                marginBottom: 24,
+              }}
+            >
+              <View
+                style={{
+                  width: 28,
+                  height: 28,
+                  backgroundColor: "#fd9898",
+                  borderRadius: "50%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: nickName === login ? 0 : 16,
+                  marginLeft: nickName === login ? 16 : 0,
+                }}
+              >
+                <Text>{nickName}</Text>
+              </View>
+
+              <View
+                style={{
+                  width: widthCommentBlock,
+                  marginBottom: 10,
+                  backgroundColor: "rgba(0, 0, 0, 0.03)",
+                  padding: 16,
+                  borderBottomLeftRadius: nickName === login ? 6 : 0,
+                  borderBottomRightRadius: nickName === login ? 6 : 0,
+                  borderTopLeftRadius: nickName === login ? 6 : 0,
+                  borderTopRightRadius: nickName === login ? 0 : 6,
+                }}
+              >
+                <Text
+                  style={{
+                    marginBottom: 8,
+                    color: "#212121",
+                    fontSize: 13,
+                    lineHeight: 18,
+                  }}
+                >
+                  {comment}
+                </Text>
+                <View style={{ width: "100%", alignItems: "flex-end" }}>
+                  <Text
+                    style={{
+                      color: "#BDBDBD",
+                      fontSize: 10,
+                    }}
+                  >
+                    {time}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          );
+        }}
+      />
       <View
         style={{
           position: "absolute",
@@ -42,9 +182,8 @@ export const CommentScreen = ({ route, navigation }) => {
       >
         <TextInput
           placeholder="Комментировать..."
-          onChangeText={(value) =>
-            setState((prevState) => ({ ...prevState, value }))
-          }
+          onChangeText={(value) => setComment(value)}
+          value={comment}
           style={{
             width: "100%",
             height: 50,
@@ -67,7 +206,9 @@ export const CommentScreen = ({ route, navigation }) => {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onPress={createPost}
+          onPress={() => {
+            createComment(), setComment("");
+          }}
         >
           <Feather name="arrow-up" size={24} color="#ffffff" />
         </TouchableOpacity>

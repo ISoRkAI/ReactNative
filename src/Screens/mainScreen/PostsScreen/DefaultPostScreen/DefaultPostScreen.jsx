@@ -1,13 +1,20 @@
-import { collection, onSnapshot, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList, Image, Text } from "react-native";
 import { db } from "../../../../../firebase/config";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 
-export const DefaultPostsScreen = ({ route, navigation }) => {
+export const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
-
+  const [commentsLength, setCommentsLength] = useState([]);
   const getAllPost = async () => {
     const queryPosts = query(collection(db, "posts"));
     onSnapshot(queryPosts, (data) => {
@@ -15,82 +22,109 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
     });
   };
 
+  // const getAllCommentLength = async () => {
+  //   const queryComments = query(collection(db, "posts", id, "comment"));
+  //   let comment = [];
+  //   onSnapshot(queryComments, (snapshot) => {
+  //     snapshot.docs.forEach((doc) => {
+  //       comment.push({ ...doc.data(), id: doc.id });
+  //     });
+  //   });
+  //   console.log(comment);
+  // };
+
   useEffect(() => {
     getAllPost();
+    // getAllCommentLength();
   }, []);
 
+  console.log("commentsLength", commentsLength);
   return (
     <View style={styles.container}>
       <FlatList
         data={posts}
-        keyExtractor={(item, indx) => indx.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 10 }}>
-            <Image source={{ uri: item.photo }} style={styles.postPhoto} />
-            <Text
-              style={{
-                color: "#212121",
-                fontSize: 16,
-                fontWeight: "500",
-                marginBottom: 8,
-              }}
-            >
-              {item.photoName}
-            </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <TouchableOpacity
-                style={{ flexDirection: "row", alignItems: "center" }}
-                onPress={() => {
-                  navigation.navigate("MainScreen", { screenOpen: true });
-                  navigation.navigate("Комментарии", { postId: item.id });
+        keyExtractor={(_, indx) => indx.toString()}
+        renderItem={({ item }) => {
+          const { id, photo, photoName, region } = item;
+          const queryComments = query(collection(db, "posts", id, "comment"));
+          let comment = [];
+          onSnapshot(queryComments, (snapshot) => {
+            snapshot.docs.forEach((doc) => {
+              comment.push({ ...doc.data(), id: doc.id });
+            });
+          });
+          console.log(comment);
+          return (
+            <View style={{ marginBottom: 10 }}>
+              <Image source={{ uri: photo }} style={styles.postPhoto} />
+              <Text
+                style={{
+                  color: "#212121",
+                  fontSize: 16,
+                  fontWeight: "500",
+                  marginBottom: 8,
                 }}
               >
-                <Feather
-                  name="message-circle"
-                  size={24}
-                  color="#BDBDBD"
-                  style={{ marginRight: 6 }}
-                />
-                <Text
-                  style={{
-                    color: "#BDBDBD",
-                    fontSize: 16,
-                  }}
-                >
-                  0
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{ flexDirection: "row", alignItems: "center" }}
-                onPress={() => {
-                  navigation.navigate("MainScreen", { screenOpen: true });
-                  navigation.navigate("Карта", { location: item.region });
+                {photoName}
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                <Feather
-                  name="map-pin"
-                  size={24}
-                  color="#BDBDBD"
-                  style={{ marginRight: 4 }}
-                />
-                <Text
-                  style={{
-                    color: "#212121",
-                    fontSize: 16,
-                    textDecorationLine: "underline",
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => {
+                    navigation.navigate("MainScreen", { screenOpen: true });
+                    navigation.navigate("Комментарии", {
+                      postId: id,
+                      uri: photo,
+                    });
                   }}
                 >
-                  {item.region.country}, {item.region.region}
-                </Text>
-              </TouchableOpacity>
+                  <Feather
+                    name="message-circle"
+                    size={24}
+                    color="#BDBDBD"
+                    style={{ marginRight: 6 }}
+                  />
+                  <Text
+                    style={{
+                      color: "#BDBDBD",
+                      fontSize: 16,
+                    }}
+                  >
+                    {comment.comment}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => {
+                    navigation.navigate("MainScreen", { screenOpen: true });
+                    navigation.navigate("Карта", { location: region });
+                  }}
+                >
+                  <Feather
+                    name="map-pin"
+                    size={24}
+                    color="#BDBDBD"
+                    style={{ marginRight: 4 }}
+                  />
+                  <Text
+                    style={{
+                      color: "#212121",
+                      fontSize: 16,
+                      textDecorationLine: "underline",
+                    }}
+                  >
+                    {region.country}, {region.region}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
+          );
+        }}
       />
     </View>
   );
