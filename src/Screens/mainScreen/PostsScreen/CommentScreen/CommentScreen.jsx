@@ -12,13 +12,11 @@ import { useSelector } from "react-redux";
 import { selectorLogin } from "../../../../redux/selectors";
 import { db } from "../../../../../firebase/config";
 import {
-  Timestamp,
   addDoc,
   collection,
   doc,
   onSnapshot,
   query,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { useState } from "react";
@@ -77,12 +75,20 @@ export const CommentScreen = ({ route, navigation }) => {
       nickName: login,
       time: getCommentTime().toString(),
     });
+    recordsLengthComments();
   };
 
   const getAllComment = async () => {
     const queryComments = query(collection(db, "posts", postId, "comment"));
-    onSnapshot(queryComments, (data) => {
+    await onSnapshot(queryComments, (data) => {
       setAllComments(data.docs.map((doc) => doc.data()));
+    });
+  };
+
+  const recordsLengthComments = async () => {
+    const frankDocRef = doc(db, "posts", postId);
+    await updateDoc(frankDocRef, {
+      length: Number(allComments.length) + 1,
     });
   };
 

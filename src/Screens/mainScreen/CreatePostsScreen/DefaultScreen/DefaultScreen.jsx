@@ -75,6 +75,7 @@ export const DefaultScreen = ({ navigation, route }) => {
         region,
         userId,
         login,
+        length: 0,
       });
       return createPost;
     } catch (e) {

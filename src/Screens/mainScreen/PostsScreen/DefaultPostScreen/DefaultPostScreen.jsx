@@ -1,11 +1,4 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList, Image, Text } from "react-native";
 import { db } from "../../../../../firebase/config";
@@ -14,29 +7,18 @@ import { Feather } from "@expo/vector-icons";
 
 export const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
-  const [commentsLength, setCommentsLength] = useState([]);
+  const commentsLength = [];
+
+  useEffect(() => {
+    getAllPost();
+  }, []);
+
   const getAllPost = async () => {
     const queryPosts = query(collection(db, "posts"));
     onSnapshot(queryPosts, (data) => {
       setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
   };
-
-  // const getAllCommentLength = async () => {
-  //   const queryComments = query(collection(db, "posts", id, "comment"));
-  //   let comment = [];
-  //   onSnapshot(queryComments, (snapshot) => {
-  //     snapshot.docs.forEach((doc) => {
-  //       comment.push({ ...doc.data(), id: doc.id });
-  //     });
-  //   });
-  //   console.log(comment);
-  // };
-
-  useEffect(() => {
-    getAllPost();
-    // getAllCommentLength();
-  }, []);
 
   console.log("commentsLength", commentsLength);
   return (
@@ -45,17 +27,9 @@ export const DefaultPostsScreen = ({ navigation }) => {
         data={posts}
         keyExtractor={(_, indx) => indx.toString()}
         renderItem={({ item }) => {
-          const { id, photo, photoName, region } = item;
-          const queryComments = query(collection(db, "posts", id, "comment"));
-          let comment = [];
-          onSnapshot(queryComments, (snapshot) => {
-            snapshot.docs.forEach((doc) => {
-              comment.push({ ...doc.data(), id: doc.id });
-            });
-          });
-          console.log(comment);
+          const { id, photo, photoName, region, length } = item;
           return (
-            <View style={{ marginBottom: 10 }}>
+            <View style={{ marginBottom: 34 }}>
               <Image source={{ uri: photo }} style={styles.postPhoto} />
               <Text
                 style={{
@@ -95,7 +69,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
                       fontSize: 16,
                     }}
                   >
-                    {comment.comment}
+                    {length}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
