@@ -6,7 +6,7 @@ import {
   updateProfile,
   onAuthStateChanged,
 } from "firebase/auth";
-
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 export const authSignUpUser = createAsyncThunk(
   "auth / signUp ",
   async ({ login, email, password }, ThunkAPI) => {

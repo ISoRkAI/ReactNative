@@ -121,3 +121,6 @@ export default RegistrationScreen = ({ navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
+// npm show expo versions
+// npm install expo-camera@new-version
+// npm install react-native-screens@3.25.0

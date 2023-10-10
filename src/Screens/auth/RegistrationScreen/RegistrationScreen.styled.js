@@ -43,7 +43,6 @@ export const PlusImg = styled.Image`
 `;
 
 export const Title = styled.Text`
-  font-family: Roboto-Medium;
   font-weight: 500;
   font-size: 30px;
   line-height: 35px;
@@ -71,7 +70,6 @@ export const ShowBtn = styled.TouchableOpacity`
 `;
 
 export const ShowText = styled.Text`
-  font-family: Roboto-Regular;
   font-size: 16px;
   line-height: 19px;
   color: #1b4371;
@@ -88,7 +86,6 @@ export const RegisterBtn = styled.TouchableOpacity`
 `;
 
 export const RegisterBtnText = styled.Text`
-  font-family: Roboto-Regular;
   font-size: 16px;
   line-height: 19px;
   color: #ffffff;
@@ -100,7 +97,6 @@ export const LogInBtn = styled.TouchableOpacity`
 `;
 
 export const LogInBtnText = styled.Text`
-  font-family: Roboto-Regular;
   font-size: 16px;
   line-height: 19px;
   color: #1b4371;

@@ -193,7 +193,7 @@ export const CommentScreen = ({ route, navigation }) => {
           style={{
             width: "100%",
             height: 50,
-            borderRadius: "50%",
+            borderRadius: 50,
             backgroundColor: "#F6F6F6",
             borderWidth: 1,
             borderColor: "#E8E8E8",
